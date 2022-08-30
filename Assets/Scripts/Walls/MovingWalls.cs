@@ -5,15 +5,20 @@ using UnityEngine;
 public class MovingWalls : MonoBehaviour
 {
     //Variable Initialization/Declaration
-    public float speed = 2.5f;
+    public float speed;
     public bool isX = true; //If this stays X then it will move on the x-axis, else it moves on the y
-    private int isUpLeft = 0; //Used to determine which way to start moving, 0 is true
+    public int dir = 0; //Used to determine which way to start moving, 0 is true
+    private Rigidbody2D rigid2D;
 
     //Start is called at the beginning of the game
     private void Start()
     {
-        //Randomize which direction it starts moving!
-        isUpLeft = Random.Range(0, 2);
+        //If stataement to change the speed based on the direction
+        if (dir == 1)
+            speed = -speed;
+
+        //Sets up this rigidbody component
+        rigid2D = gameObject.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -22,14 +27,27 @@ public class MovingWalls : MonoBehaviour
         //If statment to check if X-axis is moving or not
         if(isX)
         {
-            //addX = Mathf.PingPong(Time.time * speed, Distance);
-            //transform.position = new Vector2(startX + addX, transform.position.y);
+            //Moves in the x-axis toward a wall
+            rigid2D.velocity = new Vector2(speed, 0f);
         }
 
         else
         {
-            //addY = Mathf.PingPong(Time.time * speed, Distance);
-            //transform.position = new Vector2(transform.position.x, startY + addY);
+            //Moves in the y-axis toward a wall
+            rigid2D.velocity = new Vector2(0f, speed);
+        }
+    }
+
+    //Once the mover collides with a wall it should switch directions
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Wall")
+        {
+            //Makes sure the mover stops moving
+            rigid2D.velocity = new Vector2(0f, 0f);
+
+            //Switches direction
+            speed = -speed;
         }
     }
 }

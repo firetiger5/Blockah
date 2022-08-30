@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Win
   - Wall
+  - Mover
   layers:
   - Default
   - TransparentFX
