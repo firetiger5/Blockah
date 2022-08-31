@@ -5,22 +5,58 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     //Variable Implementation/Declaration
+    
+    //Public
     public Rigidbody2D PlayerRG;
     public float startSpeed;
     public float maxSpeed;
     public float acceleration;
+    public GameObject WonUI;
+    public GameObject PauseUI;
+
+    //Private
     private float originalSpeed;
+    private bool canMove = true;
+    private GameObject[] enemies;
 
 
     // Start is called before the first frame update
     void Start()
     {
         originalSpeed = startSpeed;
+
+        enemies = GameObject.FindGameObjectsWithTag("Mover");
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown("escape"))
+        {
+            if (canMove)
+            {
+                canMove = false; 
+                PlayerRG.velocity = new Vector2(0f, 0f);
+
+                foreach (GameObject enemy in enemies)
+                    enemy.GetComponent<MovingWalls>().EnemyFreeze();
+
+                PauseUI.SetActive(true);
+            }
+
+            else
+            {
+                foreach (GameObject enemy in enemies)
+                    enemy.GetComponent<MovingWalls>().EnemyFreeze();
+
+                PauseUI.SetActive(false);
+                canMove = true;
+            }
+        }
+
+        if (!canMove)
+            return;
+
         if (Input.GetKeyDown("space"))
         {
             Debug.Log("Space was pressed!");
@@ -77,7 +113,13 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.tag == "Win")
         {
-            Debug.Log("WINNER!");
+            canMove = false;
+            PlayerRG.velocity = new Vector2(0f, 0f);
+
+            foreach (GameObject enemy in enemies)
+                enemy.GetComponent<MovingWalls>().EnemyFreeze();
+
+            WonUI.SetActive(true);
         }
     }
 }
