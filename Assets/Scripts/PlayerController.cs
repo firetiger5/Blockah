@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     private float originalSpeed;
     private bool canMove = true;
     private GameObject[] enemies;
+    private ParticleSystem particles;
 
 
     // Start is called before the first frame update
@@ -28,6 +29,8 @@ public class PlayerController : MonoBehaviour
         originalSpeed = startSpeed;
 
         enemies = GameObject.FindGameObjectsWithTag("Mover");
+
+        particles = this.GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -43,10 +46,11 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown("space"))
         {
-            Debug.Log("Space was pressed!");
-
             if (startSpeed > 0f)
+            {
+                particles.Stop();
                 startSpeed = 0f;
+            }
 
             else
                 startSpeed = originalSpeed;
@@ -104,6 +108,8 @@ public class PlayerController : MonoBehaviour
                 enemy.GetComponent<MovingWalls>().EnemyFreeze();
 
             WonUI.SetActive(true);
+
+            particles.Stop();
         }
     }
 
@@ -111,6 +117,8 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Mover")
         {
+            FindObjectOfType<StressReceiver>().InduceStress(0.5f);
+
             canMove = false;
             PlayerRG.velocity = new Vector2(0f, 0f);
 
@@ -118,6 +126,8 @@ public class PlayerController : MonoBehaviour
                 enemy.GetComponent<MovingWalls>().EnemyFreeze();
 
             LostUI.SetActive(true);
+
+            particles.Stop();
         }
     }
 
@@ -138,6 +148,8 @@ public class PlayerController : MonoBehaviour
                 enemy.GetComponent<MovingWalls>().EnemyFreeze();
 
             PauseUI.SetActive(true);
+
+            particles.Stop();
         }
 
         else
@@ -147,6 +159,8 @@ public class PlayerController : MonoBehaviour
 
             PauseUI.SetActive(false);
             canMove = true;
+
+            particles.Play();
         }
     }
 }
