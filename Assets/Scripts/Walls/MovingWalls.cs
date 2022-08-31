@@ -62,6 +62,7 @@ public class MovingWalls : MonoBehaviour
         {
             //Makes sure the mover stops moving
             rigid2D.velocity = new Vector2(0f, 0f);
+            transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
             //Switches direction
             speed = -speed;
