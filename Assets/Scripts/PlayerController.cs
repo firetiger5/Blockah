@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public float acceleration;
     public GameObject WonUI;
     public GameObject PauseUI;
+    public GameObject LostUI;
 
     //Private
     private float originalSpeed;
@@ -33,25 +35,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown("escape"))
         {
-            if (canMove)
-            {
-                canMove = false; 
-                PlayerRG.velocity = new Vector2(0f, 0f);
-
-                foreach (GameObject enemy in enemies)
-                    enemy.GetComponent<MovingWalls>().EnemyFreeze();
-
-                PauseUI.SetActive(true);
-            }
-
-            else
-            {
-                foreach (GameObject enemy in enemies)
-                    enemy.GetComponent<MovingWalls>().EnemyFreeze();
-
-                PauseUI.SetActive(false);
-                canMove = true;
-            }
+            PauseButton();
         }
 
         if (!canMove)
@@ -120,6 +104,49 @@ public class PlayerController : MonoBehaviour
                 enemy.GetComponent<MovingWalls>().EnemyFreeze();
 
             WonUI.SetActive(true);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Mover")
+        {
+            canMove = false;
+            PlayerRG.velocity = new Vector2(0f, 0f);
+
+            foreach (GameObject enemy in enemies)
+                enemy.GetComponent<MovingWalls>().EnemyFreeze();
+
+            LostUI.SetActive(true);
+        }
+    }
+
+    //Function to set the restart button
+    public void RestartButton()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void PauseButton()
+    {
+        if (canMove)
+        {
+            canMove = false;
+            PlayerRG.velocity = new Vector2(0f, 0f);
+
+            foreach (GameObject enemy in enemies)
+                enemy.GetComponent<MovingWalls>().EnemyFreeze();
+
+            PauseUI.SetActive(true);
+        }
+
+        else
+        {
+            foreach (GameObject enemy in enemies)
+                enemy.GetComponent<MovingWalls>().EnemyFreeze();
+
+            PauseUI.SetActive(false);
+            canMove = true;
         }
     }
 }
